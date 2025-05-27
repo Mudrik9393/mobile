@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../pages/zawaInfoPage.dart';
 import '../pages/bill.dart';
 import '../pages/complaints.dart';
 import '../pages/request.dart';
@@ -83,7 +84,8 @@ class Home extends StatelessWidget {
                   label: 'ZAWA Info',
                   color: Colors.blue[100]!,
                   onTap: () {
-                    // Show ZAWA info
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const ZawaInfoPage()));
                   },
                 ),
               ],

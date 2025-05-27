@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/dashboard.dart';
+import 'pages/home.dart';  // Hakikisha ume import page unayotaka kuonyesha kama default
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,9 @@ class MyApp extends StatelessWidget {
       title: 'ZAWA System',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const Dashboard(),
+      home: const Dashboard(
+        child: Home(),  // Hii ni content ya default unayotaka kuonyesha
+      ),
     );
   }
 }

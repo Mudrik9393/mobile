@@ -26,3 +26,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/zawa_logo.png
+    - assets/Unguja.png
+    - assets/Pemba.png

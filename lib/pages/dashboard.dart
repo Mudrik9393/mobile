@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import '../widget/header.dart';
 import '../widget/footer.dart';
-import 'home.dart';
 
 class Dashboard extends StatelessWidget {
-  const Dashboard({super.key});
+  final Widget child;
+  const Dashboard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Column(
         children: [
-          Header(),
-          Expanded(child: Home()), // Home ndio default content
-          Footer(),
+          const Header(),
+          Expanded(child: child), // Hii inachukua page yoyote kama content
+          const Footer(),
         ],
       ),
     );

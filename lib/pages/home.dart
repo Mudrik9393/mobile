@@ -9,34 +9,33 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.lightBlue[50], // Background ya kuvutia
-      child: Padding(
+    return Scaffold(
+      backgroundColor: Colors.lightBlue[50],
+      body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ZAWA logo juu
+            // Logo ya ZAWA juu
             Center(
               child: Image.asset(
                 'assets/zawa_logo.png',
-                width: 100,
-                height: 100,
+                width: 150,
+                height: 150,
               ),
             ),
 
             const SizedBox(height: 10),
 
-            // Dashboard title
             const Text(
               'Welcome our Dear Customer',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
 
-            // Grid buttons (smaller)
+            // Buttons kwa grid ndogo
             GridView.count(
               shrinkWrap: true,
               crossAxisCount: 3,
@@ -76,7 +75,7 @@ class Home extends StatelessWidget {
                   label: 'Generate',
                   color: Colors.green[100]!,
                   onTap: () {
-                    // Navigate to Generate Bill page
+                    // Add your navigation here
                   },
                 ),
                 _buildButtonBox(
@@ -91,9 +90,9 @@ class Home extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 18),
 
-            // ZAWA info card - bigger and prominent
+            // Card ya maelezo ya ZAWA
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
@@ -105,14 +104,14 @@ class Home extends StatelessWidget {
                   children: [
                     Image.asset(
                       'assets/zawa_logo.png',
-                      width: 100,
-                      height: 100,
+                      width: 120,
+                      height: 120,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 70),
                     const Expanded(
                       child: Text(
                         'ZAWA (Zanzibar Water Authority) is a government authority responsible for managing water services in Zanzibar. It ensures the availability of clean and safe water, receives customer inquiries, handles complaints, and provides bills efficiently.',
-                        style: TextStyle(fontSize: 14),
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
@@ -120,15 +119,45 @@ class Home extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 12), // Nafasi kabla ya footer
+            const SizedBox(height: 70),
           ],
+        ),
+      ),
+
+      // Footer card
+      bottomNavigationBar: Card(
+        margin: const EdgeInsets.all(10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 8,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _navIcon(context, Icons.home, 'Home', () {}),
+              _navIcon(context, Icons.receipt, 'Bill', () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Bill()));
+              }),
+              _navIcon(context, Icons.report, 'Complaint', () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Complaints()));
+              }),
+              _navIcon(context, Icons.info, 'ZAWA', () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const ZawaInfoPage()));
+              }),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Button ndogo kama square
-   Widget _buildButtonBox({
+  // 🟦 Button kwa grid
+  Widget _buildButtonBox({
     required IconData icon,
     required String label,
     required Color color,
@@ -137,24 +166,43 @@ class Home extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 60, // ✅ Punguzwa square height ya button
+        height: 20, // square ndogo
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 26, color: Colors.black87), // ✅ Icon imeachwa kama ilivyo
-            const SizedBox(height: 4),
+            Icon(icon, size: 20, color: Colors.black87),
+            const SizedBox(height: 2),
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 10),
+              style: const TextStyle(fontSize: 9),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // 🟨 Nav icon helper
+  Widget _navIcon(
+    BuildContext context,
+    IconData icon,
+    String label,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.blueAccent, size: 24),
+          Text(label, style: const TextStyle(fontSize: 10)),
+        ],
       ),
     );
   }

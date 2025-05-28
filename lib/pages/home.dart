@@ -16,7 +16,6 @@ class Home extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Logo ya ZAWA juu
             Center(
               child: Image.asset(
                 'assets/zawa_logo.png',
@@ -24,18 +23,13 @@ class Home extends StatelessWidget {
                 height: 150,
               ),
             ),
-
             const SizedBox(height: 10),
-
             const Text(
               'Welcome our Dear Customer',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: 18),
-
-            // Buttons kwa grid ndogo
             GridView.count(
               shrinkWrap: true,
               crossAxisCount: 3,
@@ -46,7 +40,7 @@ class Home extends StatelessWidget {
                 _buildButtonBox(
                   icon: Icons.receipt,
                   label: 'View Bill',
-                  color: Colors.teal[100]!,
+                  iconColor: Colors.teal,
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => const Bill()));
@@ -55,7 +49,7 @@ class Home extends StatelessWidget {
                 _buildButtonBox(
                   icon: Icons.report,
                   label: 'Complaint',
-                  color: Colors.orange[100]!,
+                  iconColor: Colors.deepOrange,
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Complaints()));
@@ -64,7 +58,7 @@ class Home extends StatelessWidget {
                 _buildButtonBox(
                   icon: Icons.send,
                   label: 'Request',
-                  color: Colors.purple[100]!,
+                  iconColor: Colors.deepPurple,
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => const Request()));
@@ -73,7 +67,7 @@ class Home extends StatelessWidget {
                 _buildButtonBox(
                   icon: Icons.receipt_long,
                   label: 'Generate',
-                  color: Colors.green[100]!,
+                  iconColor: Colors.green,
                   onTap: () {
                     // Add your navigation here
                   },
@@ -81,7 +75,7 @@ class Home extends StatelessWidget {
                 _buildButtonBox(
                   icon: Icons.info,
                   label: 'ZAWA Info',
-                  color: Colors.blue[100]!,
+                  iconColor: Colors.blue,
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => const ZawaInfoPage()));
@@ -89,10 +83,7 @@ class Home extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 18),
-
-            // Card ya maelezo ya ZAWA
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
@@ -118,91 +109,41 @@ class Home extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 70),
           ],
-        ),
-      ),
-
-      // Footer card
-      bottomNavigationBar: Card(
-        margin: const EdgeInsets.all(10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        elevation: 8,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _navIcon(context, Icons.home, 'Home', () {}),
-              _navIcon(context, Icons.receipt, 'Bill', () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Bill()));
-              }),
-              _navIcon(context, Icons.report, 'Complaint', () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Complaints()));
-              }),
-              _navIcon(context, Icons.info, 'ZAWA', () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const ZawaInfoPage()));
-              }),
-            ],
-          ),
         ),
       ),
     );
   }
 
-  // 🟦 Button kwa grid
   Widget _buildButtonBox({
     required IconData icon,
     required String label,
-    required Color color,
+    required Color iconColor,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 20, // square ndogo
         decoration: BoxDecoration(
-          color: color,
+          color: Colors.grey[200],
+          border: Border.all(color: Colors.lightBlue[100]!, width: 2),
           borderRadius: BorderRadius.circular(8),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20, color: Colors.black87),
+            Icon(icon, size: 24, color: iconColor),
+            // Tumeweka SizedBox kwa 2 badala ya 4
             const SizedBox(height: 2),
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 9),
+              style: const TextStyle(fontSize: 10),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // 🟨 Nav icon helper
-  Widget _navIcon(
-    BuildContext context,
-    IconData icon,
-    String label,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.blueAccent, size: 24),
-          Text(label, style: const TextStyle(fontSize: 10)),
-        ],
       ),
     );
   }

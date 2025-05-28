@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/dashboard.dart';
 
-
 class Request extends StatelessWidget {
   const Request({super.key});
 
@@ -13,6 +12,15 @@ class Request extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Logo ya ZAWA juu kabisa
+            Center(
+              child: Image.asset(
+                'assets/zawa_logo.png',
+                height: 100,
+              ),
+            ),
+            const SizedBox(height: 20),
+
             const Text(
               'Fill the form below to request a water connection:',
               style: TextStyle(fontSize: 18),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_project/auth/loginPage.dart';
+import 'package:my_project/auth/sign_upPage.dart';
 import 'pages/dashboard.dart';
-import 'pages/home.dart';  // Hakikisha ume import page unayotaka kuonyesha kama default
+import 'pages/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,9 +17,14 @@ class MyApp extends StatelessWidget {
       title: 'ZAWA System',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const Dashboard(
-        child: Home(),  // Hii ni content ya default unayotaka kuonyesha
-      ),
+      initialRoute: '/login', // Anza na login page
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/signup': (context) => const SignupPage(),
+        '/dashboard': (context) => const Dashboard(
+              child: Home(), // Dashboard itakuwa na Home kama default
+            ),
+      },
     );
   }
 }

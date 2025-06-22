@@ -43,7 +43,7 @@ class Home extends StatelessWidget {
                   iconColor: Colors.teal,
                   onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const Bill()));
+                        MaterialPageRoute(builder: (context) => const Bill(userId: '',)));
                   },
                 ),
                 _buildButtonBox(

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../widget/header.dart';
 import '../widget/footer.dart';
 import '../pages/home.dart';
-import '../pages/bill.dart';
-import '../pages/complaints.dart';
-import '../pages/zawaInfoPage.dart';
+import '../pages/message_page.dart';
+import '../pages/settings_page.dart';
+import '../pages/about_page.dart';
 
 class Dashboard extends StatelessWidget {
   final Widget child;
@@ -33,9 +33,9 @@ class Dashboard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _navIcon(context, Icons.home, 'Home', const Home()),
-                _navIcon(context, Icons.receipt, 'Bill', const Bill()),
-                _navIcon(context, Icons.report, 'Complaint', const Complaints()),
-                _navIcon(context, Icons.info, 'ZAWA', const ZawaInfoPage()),
+                _navIcon(context, Icons.message, 'Message', const MessagePage()),
+                _navIcon(context, Icons.settings, 'Settings', const SettingsPage()),
+                _navIcon(context, Icons.info_outline, 'About', const AboutPage()),
               ],
             ),
           ),
@@ -54,7 +54,6 @@ class Dashboard extends StatelessWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        // ✅ Hatutumii tena Dashboard ndani ya Dashboard
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Dashboard(child: page)),

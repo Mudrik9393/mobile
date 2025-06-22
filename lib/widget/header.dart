@@ -9,12 +9,41 @@ class Header extends StatelessWidget {
       child: Container(
         color: Colors.blue.shade700,
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        child: const Center(
-          child: Text(
-            'ZAWA Dashboard',
-            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'ZAWA Dashboard',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            // 🔁 Badala ya more_vert tumetumia Icon ya mtu
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.account_circle, color: Colors.white, size: 28),
+              onSelected: (value) {
+                if (value == 'logout') {
+                  Navigator.pushReplacementNamed(context, '/login');
+                } else if (value == 'change_password') {
+                  Navigator.pushNamed(context, '/change-password');
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'change_password',
+                  child: Text('Change Password'),
+                ),
+                const PopupMenuItem(
+                  value: 'logout',
+                  child: Text('Logout'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

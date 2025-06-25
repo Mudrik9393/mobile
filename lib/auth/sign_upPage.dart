@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -10,30 +12,77 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
+  final _zanIdController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  void _signup() async {
+  Future<void> _signup() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
+      setState(() => _isLoading = true);
+
+      final url = Uri.parse("http://172.23.10.5:5555/api/v1/auth/register");
+
+      final body = jsonEncode({
+        "username": _usernameController.text.trim(),
+        "zanId": _zanIdController.text.trim(),
+        "email": _emailController.text.trim(),
+        "password": _passwordController.text.trim(),
+        "roleName": "customer",
       });
 
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 2));
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: body,
+        );
 
-      if (mounted) {
-        Navigator.pop(context);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          if (mounted) {
+            Navigator.pop(context); // Go back to login
+          }
+        } else {
+          _showError(response.body);
+        }
+      } catch (e) {
+        _showError('Network error: $e');
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
-
-      setState(() {
-        _isLoading = false;
-      });
     }
+  }
+
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Signup Failed"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _zanIdController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,13 +90,7 @@ class _SignupPageState extends State<SignupPage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text(
-          'Create Account',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
+        title: const Text('Create Account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -59,154 +102,109 @@ class _SignupPageState extends State<SignupPage> {
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20),
             child: Card(
               elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               child: Padding(
-                padding: const EdgeInsets.all(25.0),
+                padding: const EdgeInsets.all(25),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Logo ya ZAWA
-                      Image.asset(
-                        'assets/zawa_logo.png',
-                        height: 70,
-                        fit: BoxFit.contain,
-                      ),
+                      Image.asset('assets/zawa_logo.png', height: 70),
                       const SizedBox(height: 20),
-                      const Text(
-                        'Join ZAWA System',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
+                      const Text('Join ZAWA System', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue)),
                       const SizedBox(height: 30),
-                      // Username Field
+
+                      // Username
                       TextFormField(
                         controller: _usernameController,
                         decoration: InputDecoration(
                           labelText: 'Username',
-                          prefixIcon: const Icon(Icons.person),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                          prefixIcon: const Icon(Icons.person_outline),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                           filled: true,
                           fillColor: Colors.grey[50],
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter username';
-                          }
-                          if (value.length < 4) {
-                            return 'Username must be at least 4 characters';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter username'
+                            : (value.length < 4 ? 'Username must be at least 4 characters' : null),
                       ),
                       const SizedBox(height: 20),
-                      // Email Field
+
+                      // ZanId
+                      TextFormField(
+                        controller: _zanIdController,
+                        decoration: InputDecoration(
+                          labelText: 'ZanId',
+                          prefixIcon: const Icon(Icons.badge_outlined),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          filled: true,
+                          fillColor: Colors.grey[50],
+                        ),
+                        validator: (value) => value == null || value.isEmpty ? 'Please enter ZanId' : null,
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Email
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          labelText: 'Email Address',
-                          prefixIcon: const Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                          labelText: 'Email',
+                          prefixIcon: const Icon(Icons.email_outlined),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                           filled: true,
                           fillColor: Colors.grey[50],
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter email';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Please enter valid email';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter email'
+                            : (!value.contains('@') ? 'Please enter valid email' : null),
                       ),
                       const SizedBox(height: 20),
-                      // Password Field
+
+                      // Password
                       TextFormField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
                           labelText: 'Password',
-                          prefixIcon: const Icon(Icons.lock),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                           filled: true,
                           fillColor: Colors.grey[50],
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
+                            icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter password';
-                          }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter password'
+                            : (value.length < 6 ? 'Password must be at least 6 characters' : null),
                       ),
                       const SizedBox(height: 20),
-                      // Confirm Password Field
+
+                      // Confirm Password
                       TextFormField(
                         controller: _confirmPasswordController,
                         obscureText: _obscureConfirmPassword,
                         decoration: InputDecoration(
                           labelText: 'Confirm Password',
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                          prefixIcon: const Icon(Icons.lock_reset),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                           filled: true,
                           fillColor: Colors.grey[50],
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureConfirmPassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureConfirmPassword = !_obscureConfirmPassword;
-                              });
-                            },
+                            icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value != _passwordController.text ? 'Passwords do not match' : null,
                       ),
                       const SizedBox(height: 25),
+
                       // Sign Up Button
                       SizedBox(
                         width: double.infinity,
@@ -214,41 +212,29 @@ class _SignupPageState extends State<SignupPage> {
                           onPressed: _isLoading ? null : _signup,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             backgroundColor: Colors.blue,
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
+                              ? const CircularProgressIndicator(color: Colors.white)
                               : const Text(
                                   'SIGN UP',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                                 ),
                         ),
                       ),
                       const SizedBox(height: 20),
+
                       // Login Link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text("Already have an account?"),
                           TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
+                            onPressed: () => Navigator.pop(context),
                             child: const Text(
                               'Login',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                             ),
                           ),
                         ],
@@ -262,14 +248,5 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
   }
 }

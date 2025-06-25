@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,23 +15,66 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false;
   bool _isLoading = false;
 
-  void _login() async {
+  Future<void> _login() async {
     setState(() {
       _isLoading = true;
     });
 
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
-
-    // Hapa unaweka login logic yako halisi
-    // Kwa sasa tuta-assume login imefanikiwa
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    }
-
-    setState(() {
-      _isLoading = false;
+    final url = Uri.parse('http://172.23.10.5:5555/api/v1/auth/login');
+    final body = jsonEncode({
+      'email': _emailController.text.trim(),
+      'password': _passwordController.text.trim(),
     });
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        // Login successful
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        }
+      } else {
+        // Show error from backend
+        final errorMessage = response.body;
+        _showError(errorMessage);
+      }
+    } catch (e) {
+      _showError('Network error: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Login Failed'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -50,12 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Logo ya ZAWA
-                    Image.asset(
-                      'assets/zawa_logo.png',
-                      height: 80,
-                      fit: BoxFit.contain,
-                    ),
+                    Image.asset('assets/zawa_logo.png', height: 80),
                     const SizedBox(height: 20),
                     const Text(
                       'Welcome to ZAWA System',
@@ -66,10 +106,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    // Email Field
                     TextFormField(
                       controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: 'Email Address',
                         prefixIcon: const Icon(Icons.email),
@@ -79,18 +117,8 @@ class _LoginPageState extends State<LoginPage> {
                         filled: true,
                         fillColor: Colors.grey[50],
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!value.contains('@')) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
                     ),
                     const SizedBox(height: 20),
-                    // Password Field
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
@@ -104,14 +132,11 @@ class _LoginPageState extends State<LoginPage> {
                         fillColor: Colors.grey[50],
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.visibility),
-                          onPressed: () {
-                            // Toggle password visibility
-                          },
+                          onPressed: () {},
                         ),
                       ),
                     ),
                     const SizedBox(height: 15),
-                    // Remember Me & Forgot Password
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -129,9 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                         TextButton(
-                          onPressed: () {
-                            // Forgot password action
-                          },
+                          onPressed: () {},
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(color: Colors.blue),
@@ -140,7 +163,6 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    // Login Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -153,9 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                           backgroundColor: Colors.blue,
                         ),
                         child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
+                            ? const CircularProgressIndicator(color: Colors.white)
                             : const Text(
                                 'LOG IN',
                                 style: TextStyle(
@@ -167,7 +187,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Sign Up Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -194,12 +213,5 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 }

@@ -28,11 +28,11 @@ class _SignupPageState extends State<SignupPage> {
       final url = Uri.parse("http://172.23.10.5:5555/api/v1/auth/register");
 
       final body = jsonEncode({
-        "username": _usernameController.text.trim(),
+        "userName": _usernameController.text.trim(),
         "zanId": _zanIdController.text.trim(),
         "email": _emailController.text.trim(),
         "password": _passwordController.text.trim(),
-        "roleName": "customer",
+        "roleName": "customer", // Default role
       });
 
       try {
@@ -44,7 +44,7 @@ class _SignupPageState extends State<SignupPage> {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           if (mounted) {
-            Navigator.pop(context); // Go back to login
+            Navigator.pop(context);
           }
         } else {
           _showError(response.body);

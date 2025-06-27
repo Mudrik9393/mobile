@@ -3,6 +3,9 @@ import 'package:location/location.dart';
 import '../pages/dashboard.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:intl/intl.dart';
 
 class Request extends StatefulWidget {
   const Request({super.key});
@@ -16,6 +19,11 @@ class _RequestState extends State<Request> {
   LocationData? _locationData;
   String? _locationDetails;
   File? _selectedFile;
+
+  final _fullNameController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _requestNameController = TextEditingController();
 
   @override
   void initState() {
@@ -64,6 +72,56 @@ class _RequestState extends State<Request> {
     }
   }
 
+  Future<void> _submitRequest() async {
+    final uri = Uri.parse("http://172.23.10.5:5555/api/requests/create");
+    final request = http.MultipartRequest('POST', uri);
+
+    request.fields['fullName'] = _fullNameController.text;
+    request.fields['phoneNumber'] = _phoneNumberController.text;
+    request.fields['address'] = _addressController.text;
+    request.fields['requestName'] = _requestNameController.text;
+    request.fields['date'] = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // message unaweza kuwa empty au ujumbe wowote unataka
+    request.fields['message'] = '';
+
+    // Ongeza latitude na longitude kama fields tofauti
+    request.fields['latitude'] = _locationData?.latitude?.toString() ?? '';
+    request.fields['longitude'] = _locationData?.longitude?.toString() ?? '';
+
+    if (_selectedFile != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'document',
+        _selectedFile!.path,
+        filename: basename(_selectedFile!.path),
+      ));
+    }
+
+    try {
+      final response = await request.send();
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+          const SnackBar(content: Text('Request submitted successfully!')),
+        );
+        _fullNameController.clear();
+        _phoneNumberController.clear();
+        _addressController.clear();
+        _requestNameController.clear();
+        setState(() {
+          _selectedFile = null;
+        });
+      } else {
+        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+          SnackBar(content: Text('Error: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+        SnackBar(content: Text('Submission failed: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dashboard(
@@ -84,18 +142,18 @@ class _RequestState extends State<Request> {
             ),
             const SizedBox(height: 20),
 
-            // Full Name
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _fullNameController,
+              decoration: const InputDecoration(
                 labelText: 'Full Name',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
 
-            // Phone Number
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _phoneNumberController,
+              decoration: const InputDecoration(
                 labelText: 'Phone Number',
                 border: OutlineInputBorder(),
               ),
@@ -103,25 +161,24 @@ class _RequestState extends State<Request> {
             ),
             const SizedBox(height: 10),
 
-            // Address
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _addressController,
+              decoration: const InputDecoration(
                 labelText: 'Address',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
 
-            // Request Name
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _requestNameController,
+              decoration: const InputDecoration(
                 labelText: 'Request Name',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 20),
 
-            // Location display
             if (_locationDetails != null)
               Text(
                 'Your current location:\n$_locationDetails',
@@ -132,7 +189,6 @@ class _RequestState extends State<Request> {
 
             const SizedBox(height: 20),
 
-            // File upload
             ElevatedButton.icon(
               onPressed: _pickFile,
               icon: const Icon(Icons.upload_file),
@@ -142,21 +198,16 @@ class _RequestState extends State<Request> {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Selected file: ${_selectedFile!.path.split('/').last}',
+                  'Selected file: ${_selectedFile!.path.split(Platform.pathSeparator).last}',
                   style: const TextStyle(color: Colors.green),
                 ),
               ),
 
             const SizedBox(height: 20),
 
-            // Submit Button
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Request submitted!')),
-                  );
-                },
+                onPressed: _submitRequest,
                 child: const Text('Submit Request'),
               ),
             ),

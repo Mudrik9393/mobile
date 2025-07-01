@@ -4,6 +4,7 @@ import '../pages/zawaInfoPage.dart';
 import '../pages/bill.dart';
 import '../pages/complaints.dart';
 import '../pages/request.dart';
+import '../pages/generate.dart'; // Changed import here
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -66,7 +67,7 @@ class Home extends StatelessWidget {
                   iconColor: Colors.deepOrange,
                   onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Complaints()));
+                        MaterialPageRoute(builder: (context) => const Complaints()));
                   },
                 ),
                 _buildButtonBox(
@@ -83,7 +84,11 @@ class Home extends StatelessWidget {
                   label: 'Generate',
                   iconColor: Colors.green,
                   onTap: () {
-                    // Add your navigation here
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Generate()), // Changed here
+                    );
                   },
                 ),
                 _buildButtonBox(

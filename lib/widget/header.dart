@@ -14,7 +14,7 @@ class Header extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'ZAWA Dashboard',
+              'ZARECO',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,

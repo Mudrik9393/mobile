@@ -24,7 +24,6 @@ dependencies:
   # File picker
   file_picker: ^10.2.0
 
-
   # Open URLs (like launching Google Maps etc)
   url_launcher: ^6.2.1
 
@@ -46,6 +45,9 @@ dependencies:
   # 📍 Map support
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
+
+  # Shared Preferences
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

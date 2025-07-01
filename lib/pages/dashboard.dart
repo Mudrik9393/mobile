@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../widget/header.dart';
 import '../widget/footer.dart';
 import '../pages/home.dart';
 import '../pages/message_page.dart';
 import '../pages/settings_page.dart';
 import '../pages/about_page.dart';
+import '../pages/bill.dart';
 
 class Dashboard extends StatelessWidget {
   final Widget child;
@@ -12,36 +15,43 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      body: Column(
-        children: [
-          const Header(), // Header juu
+      body: SafeArea(
+        child: Column(
+          children: [
+            const Header(), // Header ya juu
 
-          // Page content
-          Expanded(child: child),
+            Expanded(child: child), // Yaliyomo ya kila page
 
-          // Navigation bar
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(color: Colors.grey.shade300, width: 1),
+            // Navigation bar
+            Container(
+              padding: EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: screenWidth * 0.04,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: Colors.grey.shade300, width: 1),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _navIcon(context, Icons.home, 'Home', const Home(), screenWidth),
+                  _navIcon(context, Icons.receipt_long, 'Bills', null, screenWidth, isBill: true),
+                  _navIcon(context, Icons.message, 'Message', const MessagePage(), screenWidth),
+                  _navIcon(context, Icons.settings, 'Settings', const SettingsPage(), screenWidth),
+                  _navIcon(context, Icons.info_outline, 'About', const AboutPage(), screenWidth),
+                ],
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _navIcon(context, Icons.home, 'Home', const Home()),
-                _navIcon(context, Icons.message, 'Message', const MessagePage()),
-                _navIcon(context, Icons.settings, 'Settings', const SettingsPage()),
-                _navIcon(context, Icons.info_outline, 'About', const AboutPage()),
-              ],
-            ),
-          ),
 
-          const Footer(), // Footer chini kabisa
-        ],
+            const Footer(), // Footer ya mwisho
+          ],
+        ),
       ),
     );
   }
@@ -50,20 +60,43 @@ class Dashboard extends StatelessWidget {
     BuildContext context,
     IconData icon,
     String label,
-    Widget page,
-  ) {
+    Widget? page,
+    double screenWidth, {
+    bool isBill = false,
+  }) {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Dashboard(child: page)),
-        );
+      onTap: () async {
+        if (isBill) {
+          final prefs = await SharedPreferences.getInstance();
+          final userId = prefs.getString('userId');
+
+          if (userId != null) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Dashboard(child: Bill(userId: userId)),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('User ID not found')),
+            );
+          }
+        } else if (page != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Dashboard(child: page)),
+          );
+        }
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: Colors.blueAccent, size: 24),
-          Text(label, style: const TextStyle(fontSize: 10)),
+          Text(
+            label,
+            style: TextStyle(fontSize: screenWidth * 0.025),
+          ),
         ],
       ),
     );

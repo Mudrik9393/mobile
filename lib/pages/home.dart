@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../pages/zawaInfoPage.dart';
 import '../pages/bill.dart';
 import '../pages/complaints.dart';
@@ -41,9 +42,22 @@ class Home extends StatelessWidget {
                   icon: Icons.receipt,
                   label: 'View Bill',
                   iconColor: Colors.teal,
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const Bill(userId: '',)));
+                  onTap: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    final userId = prefs.getString('userId');
+
+                    if (userId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Bill(userId: userId),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('User ID not found')),
+                      );
+                    }
                   },
                 ),
                 _buildButtonBox(
@@ -135,7 +149,6 @@ class Home extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 24, color: iconColor),
-            // Tumeweka SizedBox kwa 2 badala ya 4
             const SizedBox(height: 2),
             Text(
               label,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
@@ -34,14 +35,18 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.statusCode == 200) {
-        // Login successful
+        final responseData = jsonDecode(response.body);
+        final userId = responseData['userId'].toString();
+
+        // Hifadhi userId kwenye SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', userId);
+
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/dashboard');
         }
       } else {
-        // Show error from backend
-        final errorMessage = response.body;
-        _showError(errorMessage);
+        _showError("Login failed: ${response.body}");
       }
     } catch (e) {
       _showError('Network error: $e');

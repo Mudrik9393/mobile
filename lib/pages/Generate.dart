@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../pages/dashboard.dart';
+
 class Generate extends StatefulWidget {
   const Generate({super.key});
 
@@ -61,12 +63,8 @@ class _GenerateState extends State<Generate> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Generate Control Number'),
-        backgroundColor: Colors.green,
-      ),
-      body: Padding(
+    return Dashboard(
+      child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

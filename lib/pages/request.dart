@@ -57,8 +57,7 @@ class _RequestState extends State<Request> {
     final loc = await location.getLocation();
     setState(() {
       _locationData = loc;
-      _locationDetails =
-          'Latitude: ${loc.latitude}, Longitude: ${loc.longitude}';
+      _locationDetails = 'Latitude: ${loc.latitude}, Longitude: ${loc.longitude}';
     });
   }
 
@@ -81,11 +80,7 @@ class _RequestState extends State<Request> {
     request.fields['address'] = _addressController.text;
     request.fields['requestName'] = _requestNameController.text;
     request.fields['date'] = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-    // message unaweza kuwa empty au ujumbe wowote unataka
     request.fields['message'] = '';
-
-    // Ongeza latitude na longitude kama fields tofauti
     request.fields['latitude'] = _locationData?.latitude?.toString() ?? '';
     request.fields['longitude'] = _locationData?.longitude?.toString() ?? '';
 
@@ -103,13 +98,21 @@ class _RequestState extends State<Request> {
         ScaffoldMessenger.of(context as BuildContext).showSnackBar(
           const SnackBar(content: Text('Request submitted successfully!')),
         );
+
+        // Clear all form fields
         _fullNameController.clear();
         _phoneNumberController.clear();
         _addressController.clear();
         _requestNameController.clear();
+
         setState(() {
           _selectedFile = null;
+          _locationDetails = null;
+          _locationData = null;
         });
+
+        // Refresh location
+        _fetchLocation();
       } else {
         ScaffoldMessenger.of(context as BuildContext).showSnackBar(
           SnackBar(content: Text('Error: ${response.statusCode}')),
@@ -185,7 +188,7 @@ class _RequestState extends State<Request> {
                 style: const TextStyle(color: Colors.blue),
               )
             else
-              const CircularProgressIndicator(),
+              const Center(child: CircularProgressIndicator()),
 
             const SizedBox(height: 20),
 

@@ -25,7 +25,7 @@ class _SignupPageState extends State<SignupPage> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      final url = Uri.parse("http://172.23.10.5:5555/api/v1/auth/register");
+      final url = Uri.parse("http://192.168.154.87:5555/api/v1/auth/register");
 
       final body = jsonEncode({
         "userName": _usernameController.text.trim(),

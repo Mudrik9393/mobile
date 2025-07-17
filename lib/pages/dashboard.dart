@@ -42,7 +42,7 @@ class Dashboard extends StatelessWidget {
                 children: [
                   _navIcon(context, Icons.home, 'Home', const Home(), screenWidth),
                   _navIcon(context, Icons.message, 'Message', const MessagePage(), screenWidth),
-                  _navIcon(context, Icons.settings, 'Settings', const SettingsPage(), screenWidth),
+                  _navIcon(context, Icons.person, 'Profile', const SettingsPage(), screenWidth), 
                   _navIcon(context, Icons.info_outline, 'About', const AboutPage(), screenWidth),
                 ],
               ),

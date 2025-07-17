@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    final url = Uri.parse('http://172.23.10.5:5555/api/v1/auth/login');
+    final url = Uri.parse('http://192.168.154.87:5555/api/v1/auth/login');
     final body = jsonEncode({
       'email': _emailController.text.trim(),
       'password': _passwordController.text.trim(),
@@ -36,6 +36,13 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
+
+        final roleName = responseData['roleName'] ?? '';
+        if (roleName.toLowerCase() != 'customer') {
+          _showError('Only customers are allowed to login in the app.');
+          return;
+        }
+
         final userId = responseData['userId'].toString();
 
         // Hifadhi userId kwenye SharedPreferences

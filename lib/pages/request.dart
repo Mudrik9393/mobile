@@ -72,7 +72,7 @@ class _RequestState extends State<Request> {
   }
 
   Future<void> _submitRequest() async {
-    final uri = Uri.parse("http://172.23.10.5:5555/api/requests/create");
+    final uri = Uri.parse("http://192.168.154.87:5555/api/requests/create");
     final request = http.MultipartRequest('POST', uri);
 
     request.fields['fullName'] = _fullNameController.text;

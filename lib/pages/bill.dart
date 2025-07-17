@@ -24,7 +24,7 @@ class _BillState extends State<Bill> {
   Future<void> fetchBills() async {
     try {
       final response = await http.get(
-        Uri.parse('http://172.23.10.5:5555/api/bills/user/${widget.userId}'),
+        Uri.parse('http://192.168.154.87:5555/api/bills/user/${widget.userId}'),
       );
 
       if (response.statusCode == 200) {

@@ -6,7 +6,7 @@ import 'package:my_project/models/billmodel.dart';
 class BillService {
   static Future<List<BillModel>> getBills(String userId) async {
     final response = await http.get(
-  Uri.parse('http://172.23.10.5:5555/api/bills/user/$userId'),
+  Uri.parse('http://10.153.24.78:5555/api/bills/user/$userId'),
 );
 
 

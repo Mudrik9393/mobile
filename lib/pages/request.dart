@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:intl/intl.dart';
+import 'constants.dart';
 
 class Request extends StatefulWidget {
   const Request({super.key});
@@ -20,6 +21,7 @@ class _RequestState extends State<Request> {
   String? _locationDetails;
   File? _selectedFile;
 
+  final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _phoneNumberController = TextEditingController();
   final _addressController = TextEditingController();
@@ -72,7 +74,9 @@ class _RequestState extends State<Request> {
   }
 
   Future<void> _submitRequest() async {
-    final uri = Uri.parse("http://192.168.154.87:5555/api/requests/create");
+    if (!_formKey.currentState!.validate()) return;
+
+    final uri = Uri.parse("${Constants.baseUrl}/api/requests/create");
     final request = http.MultipartRequest('POST', uri);
 
     request.fields['fullName'] = _fullNameController.text;
@@ -130,91 +134,110 @@ class _RequestState extends State<Request> {
     return Dashboard(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            Center(
-              child: Image.asset(
-                'assets/zawa_logo.png',
-                height: 100,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Fill the form below to request a water connection:',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
-
-            TextField(
-              controller: _fullNameController,
-              decoration: const InputDecoration(
-                labelText: 'Full Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            TextField(
-              controller: _phoneNumberController,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 10),
-
-            TextField(
-              controller: _addressController,
-              decoration: const InputDecoration(
-                labelText: 'Address',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            TextField(
-              controller: _requestNameController,
-              decoration: const InputDecoration(
-                labelText: 'Request Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            if (_locationDetails != null)
-              Text(
-                'Your current location:\n$_locationDetails',
-                style: const TextStyle(color: Colors.blue),
-              )
-            else
-              const Center(child: CircularProgressIndicator()),
-
-            const SizedBox(height: 20),
-
-            ElevatedButton.icon(
-              onPressed: _pickFile,
-              icon: const Icon(Icons.upload_file),
-              label: const Text("Upload File"),
-            ),
-            if (_selectedFile != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  'Selected file: ${_selectedFile!.path.split(Platform.pathSeparator).last}',
-                  style: const TextStyle(color: Colors.green),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              Center(
+                child: Image.asset(
+                  'assets/zawa_logo.png',
+                  height: 100,
                 ),
               ),
-
-            const SizedBox(height: 20),
-
-            Center(
-              child: ElevatedButton(
-                onPressed: _submitRequest,
-                child: const Text('Submit Request'),
+              const SizedBox(height: 20),
+              const Text(
+                'Fill the form below to request a water connection:',
+                style: TextStyle(fontSize: 18),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              TextFormField(
+                controller: _fullNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Full Name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Enter full name' : null,
+              ),
+              const SizedBox(height: 10),
+
+              TextFormField(
+                controller: _phoneNumberController,
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Enter phone number';
+                  }
+                  final regex = RegExp(r'^[0-9]+$'); // digits only
+                  if (!regex.hasMatch(value)) {
+                    return 'Phone number must contain digits only';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+
+              TextFormField(
+                controller: _addressController,
+                decoration: const InputDecoration(
+                  labelText: 'Address',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Enter address' : null,
+              ),
+              const SizedBox(height: 10),
+
+              TextFormField(
+                controller: _requestNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Request Name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Enter request name' : null,
+              ),
+              const SizedBox(height: 20),
+
+              if (_locationDetails != null)
+                Text(
+                  'Your current location:\n$_locationDetails',
+                  style: const TextStyle(color: Colors.blue),
+                )
+              else
+                const Center(child: CircularProgressIndicator()),
+
+              const SizedBox(height: 20),
+
+              ElevatedButton.icon(
+                onPressed: _pickFile,
+                icon: const Icon(Icons.upload_file),
+                label: const Text("Upload File"),
+              ),
+              if (_selectedFile != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    'Selected file: ${_selectedFile!.path.split(Platform.pathSeparator).last}',
+                    style: const TextStyle(color: Colors.green),
+                  ),
+                ),
+
+              const SizedBox(height: 20),
+
+              Center(
+                child: ElevatedButton(
+                  onPressed: _submitRequest,
+                  child: const Text('Submit Request'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

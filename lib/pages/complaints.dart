@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import '../pages/dashboard.dart'; // Ensure this exists
+import '../pages/dashboard.dart'; 
+import 'constants.dart';
 
 class Complaints extends StatefulWidget {
   const Complaints({super.key});
@@ -98,7 +99,7 @@ class _ComplaintsState extends State<Complaints> {
     };
 
     try {
-      final url = Uri.parse("http://192.168.154.87:5555/api/complaints/create"); // Adjust for emulator/device
+      final url = Uri.parse("${Constants.baseUrl}/api/complaints/create"); // Adjust for emulator/device
 
       final response = await http.post(
         url,
@@ -168,7 +169,16 @@ class _ComplaintsState extends State<Complaints> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.phone,
-                    validator: (value) => value == null || value.isEmpty ? 'Enter phone number' : null,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Enter phone number';
+                      }
+                      final regex = RegExp(r'^[0-9]+$'); // digits only
+                      if (!regex.hasMatch(value)) {
+                        return 'Phone number must contain digits only';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextFormField(

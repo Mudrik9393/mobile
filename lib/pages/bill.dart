@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../pages/dashboard.dart'; // ← kuhakikisha Dashboard ipo
+import '../pages/dashboard.dart';
+import 'constants.dart'; // ← kuhakikisha Dashboard ipo
 
 class Bill extends StatefulWidget {
   final String userId;
@@ -24,7 +25,7 @@ class _BillState extends State<Bill> {
   Future<void> fetchBills() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.154.87:5555/api/bills/user/${widget.userId}'),
+        Uri.parse('${Constants.baseUrl}/api/bills/user/${widget.userId}'),
       );
 
       if (response.statusCode == 200) {

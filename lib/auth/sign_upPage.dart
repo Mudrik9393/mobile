@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:my_project/pages/constants.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -25,7 +26,7 @@ class _SignupPageState extends State<SignupPage> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      final url = Uri.parse("http://192.168.154.87:5555/api/v1/auth/register");
+      final url = Uri.parse("${Constants.baseUrl}/api/v1/auth/register");
 
       final body = jsonEncode({
         "userName": _usernameController.text.trim(),
@@ -159,9 +160,17 @@ class _SignupPageState extends State<SignupPage> {
                           filled: true,
                           fillColor: Colors.grey[50],
                         ),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Please enter email'
-                            : (!value.contains('@') ? 'Please enter valid email' : null),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter email';
+                          }
+                          // Regex for email format
+                          final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 20),
 
@@ -180,9 +189,17 @@ class _SignupPageState extends State<SignupPage> {
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                           ),
                         ),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Please enter password'
-                            : (value.length < 6 ? 'Password must be at least 6 characters' : null),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter password';
+                          }
+                          // Strong password: min 9 chars, at least 1 letter, 1 digit, 1 special char
+                          final strongPass = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{9,}$');
+                          if (!strongPass.hasMatch(value)) {
+                            return 'Password must be at least 9 characters and include letters, numbers, and symbols';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 20),
 

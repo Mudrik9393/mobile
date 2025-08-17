@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'constants.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -26,7 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     try {
       final response = await http
-          .get(Uri.parse('http://192.168.154.87:5555/api/users/$userId'))
+          .get(Uri.parse('${Constants.baseUrl}/api/users/$userId'))
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {

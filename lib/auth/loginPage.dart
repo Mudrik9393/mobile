@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:my_project/pages/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    final url = Uri.parse('http://192.168.154.87:5555/api/v1/auth/login');
+    final url = Uri.parse('${Constants.baseUrl}/api/v1/auth/login');
     final body = jsonEncode({
       'email': _emailController.text.trim(),
       'password': _passwordController.text.trim(),

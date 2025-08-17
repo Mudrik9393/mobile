@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pages/dashboard.dart';
+import 'constants.dart';
 
 class Generate extends StatefulWidget {
   const Generate({super.key});
@@ -39,7 +40,7 @@ class _GenerateState extends State<Generate> {
       return;
     }
 
-    final url = Uri.parse('http://192.168.154.87:5555/api/generate/$userId');
+    final url = Uri.parse('${Constants.baseUrl}/api/generate/$userId');
 
     try {
       final response = await http.post(url);
@@ -82,7 +83,7 @@ class _GenerateState extends State<Generate> {
       return;
     }
 
-    final url = Uri.parse('http://192.168.154.87:5555/api/generate/single/$userId');
+    final url = Uri.parse('${Constants.baseUrl}/api/generate/single/$userId');
 
     try {
       final response = await http.get(url);
